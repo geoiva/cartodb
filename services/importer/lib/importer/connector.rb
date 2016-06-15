@@ -50,6 +50,9 @@ module CartoDB
         @conn_str = conn_str
         # TODO: parser params properly, make param names lowercase
         @params = Hash[@conn_str.split(';').map { |p| p.split('=').map(&:strip) }]
+        # Temporary hack to allow equal signs in parameter values (e.g. sql_query):
+        # the equal sign should be codified as .eq.
+        @params = Hash[@params.map { |k, v| [k, v.gsub('.eq.', '=').gsub('.sc.', ';')] }]
         # TODO: use IMPORT FOREIGH SCHEMA with query options to create table
         # and thus avoid the need for the columns.
         @columns = @params.delete 'columns'
